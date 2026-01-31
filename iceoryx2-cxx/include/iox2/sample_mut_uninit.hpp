@@ -71,12 +71,13 @@ class SampleMutUninit {
     template <typename T = Payload, typename = std::enable_if_t<bb::IsSlice<T>::VALUE, T>>
     auto write_from_slice(bb::ImmutableSlice<ValueType>& value) -> SampleMut<S, Payload, UserHeader>;
 
+    /// converts the sample to an assumed-initialized sample
+    template <ServiceType ST, typename PayloadT, typename UserHeaderT>
+    friend auto assume_init(SampleMutUninit<ST, PayloadT, UserHeaderT>&& self) -> SampleMut<ST, PayloadT, UserHeaderT>;
+
   private:
     template <ServiceType, typename, typename>
     friend class Publisher;
-
-    template <ServiceType ST, typename PayloadT, typename UserHeaderT>
-    friend auto assume_init(SampleMutUninit<ST, PayloadT, UserHeaderT>&& self) -> SampleMut<ST, PayloadT, UserHeaderT>;
 
     // The sample is defaulted since both members are initialized in Publisher::loan_uninit() or
     // Publisher::loan_slice_uninit()
