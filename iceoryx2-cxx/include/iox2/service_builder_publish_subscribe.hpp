@@ -139,16 +139,25 @@ class ServiceBuilderPublishSubscribe {
     friend class ServiceBuilder;
 
     explicit ServiceBuilderPublishSubscribe(iox2_service_builder_h handle);
+    explicit ServiceBuilderPublishSubscribe(iox2_service_builder_h handle, TypeName type_name);
 
     void set_parameters();
 
     iox2_service_builder_pub_sub_h m_handle = nullptr;
+    iox2::bb::Optional<TypeName> m_type_name = { };
 };
 
 template <typename Payload, typename UserHeader, ServiceType S>
 inline ServiceBuilderPublishSubscribe<Payload, UserHeader, S>::ServiceBuilderPublishSubscribe(
     iox2_service_builder_h handle)
     : m_handle { iox2_service_builder_pub_sub(handle) } {
+}
+
+template <typename Payload, typename UserHeader, ServiceType S>
+inline ServiceBuilderPublishSubscribe<Payload, UserHeader, S>::ServiceBuilderPublishSubscribe(
+    iox2_service_builder_h handle, TypeName type_name)
+    : m_handle { iox2_service_builder_pub_sub(handle) }
+    , m_type_name { std::move(type_name) } {
 }
 
 template <typename Payload, typename UserHeader, ServiceType S>
@@ -183,7 +192,7 @@ inline void ServiceBuilderPublishSubscribe<Payload, UserHeader, S>::set_paramete
     auto type_variant = bb::IsSlice<Payload>::VALUE ? iox2_type_variant_e_DYNAMIC : iox2_type_variant_e_FIXED_SIZE;
 
     // payload type details
-    const auto payload_type_name = internal::get_type_name<Payload>();
+    const auto payload_type_name = m_type_name.value_or(internal::get_type_name<Payload>());
     const auto payload_type_size = sizeof(ValueType);
     const auto payload_type_align = alignof(ValueType);
 
