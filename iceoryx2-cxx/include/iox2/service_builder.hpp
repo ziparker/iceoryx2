@@ -36,6 +36,10 @@ class ServiceBuilder {
     template <typename Payload>
     auto publish_subscribe() && -> ServiceBuilderPublishSubscribe<Payload, void, S>;
 
+    /// Create a new builder to create a type-erased
+    /// [`MessagingPattern::PublishSubscribe`] [`Service`].
+    auto publish_subscribe_generic(TypeName type_name) && -> ServiceBuilderPublishSubscribe<bb::Slice<std::uint8_t>, void, S>;
+
     /// Create a new builder to create a
     /// [`MessagingPattern::Event`] [`Service`].
     auto event() && -> ServiceBuilderEvent<S>;
@@ -77,6 +81,11 @@ template <ServiceType S>
 template <typename Payload>
 inline auto ServiceBuilder<S>::publish_subscribe() && -> ServiceBuilderPublishSubscribe<Payload, void, S> {
     return ServiceBuilderPublishSubscribe<Payload, void, S> { m_handle };
+}
+
+template <ServiceType S>
+inline auto ServiceBuilder<S>::publish_subscribe_generic(TypeName type_name) && -> ServiceBuilderPublishSubscribe<bb::Slice<std::uint8_t>, void, S> {
+    return ServiceBuilderPublishSubscribe<bb::Slice<std::uint8_t>, void, S> { m_handle, type_name };
 }
 
 template <ServiceType S>
