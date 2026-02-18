@@ -20,6 +20,7 @@ namespace iox2 {
 /// Sample header used by [`MessagingPattern::PublishSubscribe`]
 class HeaderPublishSubscribe {
   public:
+    explicit HeaderPublishSubscribe(iox2_publish_subscribe_header_h handle);
     HeaderPublishSubscribe(const HeaderPublishSubscribe&) = delete;
     HeaderPublishSubscribe(HeaderPublishSubscribe&& rhs) noexcept;
     auto operator=(const HeaderPublishSubscribe&) -> HeaderPublishSubscribe& = delete;
@@ -38,7 +39,6 @@ class HeaderPublishSubscribe {
     template <ServiceType, typename, typename>
     friend class SampleMut;
 
-    explicit HeaderPublishSubscribe(iox2_publish_subscribe_header_h handle);
     void drop();
 
     iox2_publish_subscribe_header_h m_handle = nullptr;
